@@ -1,3 +1,3 @@
-# flutter_application_1
+# anatcha_pic_git
 
-A new Flutter project.
+Flutter project: flutter_application_1
