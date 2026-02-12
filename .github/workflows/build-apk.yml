@@ -1,4 +1,4 @@
-name: Build Flutter APK
+name: Build Flutter APK and Release
 
 on:
   push:
@@ -6,34 +6,33 @@ on:
       - main
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout source
-        uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-      - name: Set up Java
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'zulu'
-          java-version: '17'
-
-      - name: Set up Flutter
+      - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          channel: 'stable'
-          cache: true
+          flutter-version: '3.16.0'
 
-      - name: Flutter pub get
+      - name: Install dependencies
         run: flutter pub get
 
-      - name: Build APK (release)
+      - name: Build APK
         run: flutter build apk --release
 
-      - name: Upload APK artifact
-        uses: actions/upload-artifact@v4
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
         with:
-          name: anatcha-pic-apk
-          path: build/app/outputs/flutter-apk/app-release.apk
+          tag_name: v1.${{ github.run_number }}
+          name: Release v1.${{ github.run_number }}
+          files: build/app/outputs/flutter-apk/app-release.apk
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
